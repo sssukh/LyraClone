@@ -8,7 +8,7 @@ public class LyraClone : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GamePlayTags", "ModularGamePlay" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GamePlayTags", "ModularGamePlay", "GameFeatures" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

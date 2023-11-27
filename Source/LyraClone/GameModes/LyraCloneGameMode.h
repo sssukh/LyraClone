@@ -19,10 +19,12 @@ public:
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override final;
 	virtual void InitGameState() override final;
-
+	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
 	void HandleMatchAssignmentIfNotExpectingOne();
-	
+	void OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId);
+	bool IsExperienceLoaded() const;
 	void OnExperienceLoaded(const ULyraCloneExperienceDefinition* CurrentExperience);
 	
 

@@ -12,4 +12,7 @@ class ULyraClonePawnData : public UPrimaryDataAsset
 	GENERATED_BODY()
 public:
 	ULyraClonePawnData(const FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "LyraClone|Pawn")
+	TSubclassOf<APawn> PawnClass;
 };

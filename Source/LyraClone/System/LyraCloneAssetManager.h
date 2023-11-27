@@ -16,7 +16,7 @@ public:
 public:
 	static void TestClone();
 
-	ULyraCloneAssetManager& Get();
+	static ULyraCloneAssetManager& Get();
 
 	static bool ShouldLogAssetLoads();
 
