@@ -4,5 +4,5 @@
 
 ALyraCloneGameState::ALyraCloneGameState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-
+	ExperienceManagerComponent = CreateDefaultSubobject<ULyraCloneExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
 }

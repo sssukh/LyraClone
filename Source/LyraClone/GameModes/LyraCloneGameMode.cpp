@@ -2,13 +2,13 @@
 
 #include "LyraCloneGameMode.h"
 
+#include "LyraCloneExperienceManagerComponent.h"
 #include "LyraCloneGameState.h"
 #include "LyraClone/Character/LyraCloneCharacter.h"
 #include "LyraClone/Player/LyraClonePlayerController.h"
 #include "LyraClone/Player/LyraClonePlayerState.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneGameMode)
-
 
 ALyraCloneGameMode::ALyraCloneGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -17,7 +17,6 @@ ALyraCloneGameMode::ALyraCloneGameMode(const FObjectInitializer& ObjectInitializ
 	PlayerStateClass = ALyraClonePlayerState::StaticClass();
 	DefaultPawnClass = ALyraCloneCharacter::StaticClass();
 }
-
 
 void ALyraCloneGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
@@ -29,6 +28,24 @@ void ALyraCloneGameMode::InitGame(const FString& MapName, const FString& Options
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignmentIfNotExpectingOne);
 }
 
+void ALyraCloneGameMode::InitGameState()
+{
+	Super::InitGameState();
+
+	ULyraCloneExperienceManagerComponent* ExperienceManagerComponent = GameState->FindComponentByClass<ULyraCloneExperienceManagerComponent>();
+	check(ExperienceManagerComponent);
+
+	ExperienceManagerComponent->CallOrRegister_OnExperienceLoaded(FOnLyraCloneExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+}
+
+
+
 void ALyraCloneGameMode::HandleMatchAssignmentIfNotExpectingOne()
 {
 }
+
+void ALyraCloneGameMode::OnExperienceLoaded(const ULyraCloneExperienceDefinition* CurrentExperience)
+{
+
+}
+
