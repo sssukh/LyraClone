@@ -33,6 +33,7 @@ class ULyraCloneExperienceManagerComponent : public UGameStateComponent
 	void StartExperienceLoad();
 	void OnExperienceLoadComplete();
 	void OnExperienceFullLoadComplete();
+	const ULyraCloneExperienceDefinition* GetCurrentExperienceChecked() const;
 
 	/*
 	* member variable

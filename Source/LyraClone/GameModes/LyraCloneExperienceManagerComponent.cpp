@@ -138,3 +138,10 @@ void ULyraCloneExperienceManagerComponent::OnExperienceFullLoadComplete()
 	OnExperienceLoaded.Broadcast(CurrentExperience);
 	OnExperienceLoaded.Clear();
 }
+
+const ULyraCloneExperienceDefinition* ULyraCloneExperienceManagerComponent::GetCurrentExperienceChecked() const
+{
+	check(LoadState == ELyraCloneExperienceLoadState::Loaded);
+	check(CurrentExperience != nullptr);
+	return CurrentExperience;
+}

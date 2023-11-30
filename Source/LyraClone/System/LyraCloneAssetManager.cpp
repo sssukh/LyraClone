@@ -1,4 +1,5 @@
 #include "LyraCloneAssetManager.h"
+#include "LyraClone/LyraCloneGameplayTags.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneAssetManager)
 
 ULyraCloneAssetManager::ULyraCloneAssetManager() : Super()
@@ -23,7 +24,7 @@ void ULyraCloneAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
 
-	UE_LOG(LogTemp, Warning, TEXT("StartInitialLoading"));
+	FLyraCloneGameplayTags::InitializeNativeTags();
 }
 
 bool ULyraCloneAssetManager::ShouldLogAssetLoads()

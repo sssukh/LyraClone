@@ -7,6 +7,7 @@
 #include "LyraCloneGameMode.generated.h"
 
 class ULyraCloneExperienceDefinition;
+class ULyraClonePawnData;
 /**
  * 
  */
@@ -17,16 +18,23 @@ class LYRACLONE_API ALyraCloneGameMode : public AGameModeBase
 public:
 	ALyraCloneGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+
+	// AGameModeBase interface
+
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override final;
 	virtual void InitGameState() override final;
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) final;
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+
+	// member methods
 
 	void HandleMatchAssignmentIfNotExpectingOne();
 	void OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId);
 	bool IsExperienceLoaded() const;
 	void OnExperienceLoaded(const ULyraCloneExperienceDefinition* CurrentExperience);
-	
+	const ULyraClonePawnData* GetPawnDataForController(const AController* InController) const;
 
 	
 
