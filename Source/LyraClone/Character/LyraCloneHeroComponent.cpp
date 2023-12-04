@@ -1,9 +1,10 @@
 #include "LyraCloneHeroComponent.h"
-
+#include "LyraClonePawnData.h"
 #include "LyraClonePawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "LyraClone/LyraCloneChannels.h"
 #include "LyraClone/LyraCloneGameplayTags.h"
+#include "LyraClone/Camera/LyraCloneCameraComponent.h"
 #include "LyraCLone/Player/LyraCLonePlayerState.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneHeroComponent)
@@ -16,6 +17,25 @@ ULyraCloneHeroComponent::ULyraCloneHeroComponent(const FObjectInitializer& Objec
 	// LyraCloneHeroComponent도 PawnExtensionComponent와 동일하게 초기화를 이벤트로 처리할 예정이므로 Tick을 끕니다.
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+TSubclassOf<ULyraCloneCameraMode> ULyraCloneHeroComponent::DeterminCameraMode() const
+{
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return nullptr;
+	}
+
+	if (ULyraClonePawnExtensionComponent* PawnExtComp = ULyraClonePawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		if (const ULyraClonePawnData* PawnData = PawnExtComp->GetPawnData<ULyraClonePawnData>())
+		{
+			return PawnData->DefaultCameraMode;
+		}
+	}
+
+	return nullptr;
 }
 
 void ULyraCloneHeroComponent::OnRegister()
@@ -130,9 +150,26 @@ void ULyraCloneHeroComponent::HandleChangeInitState(UGameFrameworkComponentManag
 		{
 			return;
 		}
+		// Input과 Camera에 대한 핸들링 (TODO)
+
+		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
+		const ULyraClonePawnData* PawnData = nullptr;
+		if (ULyraClonePawnExtensionComponent* PawnExtComp = ULyraClonePawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			PawnData = PawnExtComp->GetPawnData<ULyraClonePawnData>();
+		}
+		
+		if (bIsLocallyControlled && PawnData)
+		{
+			// 현재 LyraCloneCharacter에 Attach된 CameraComponent를 찾음
+			if (ULyraCloneCameraComponent* CameraComponent = ULyraCloneCameraComponent::FindCameraComponent(Pawn))
+			{
+				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DeterminCameraMode);
+			}
+		}
 	}
 
-	// TODO : 추가 구현 예정 Input과 Camera
+	
 }
 
 void ULyraCloneHeroComponent::CheckDefaultInitialization()

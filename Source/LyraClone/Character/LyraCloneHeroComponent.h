@@ -4,6 +4,7 @@
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "LyraCloneHeroComponent.generated.h"
 
+class ULyraCloneCameraMode;
 UCLASS(Blueprintable,Meta=(BlueprintSpawnableComponent))
 class ULyraCloneHeroComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
@@ -26,4 +27,7 @@ public:
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const final;
 	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manger, FGameplayTag CurrentState, FGameplayTag DesiredState)	 final;
 	virtual void CheckDefaultInitialization() final;
+
+	// member methods
+	TSubclassOf<ULyraCloneCameraMode> DeterminCameraMode() const;
 };

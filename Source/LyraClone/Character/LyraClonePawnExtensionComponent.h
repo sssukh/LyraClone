@@ -17,10 +17,15 @@ public:
 	static const FName NAME_ActorFeatureName;
 
 	// member methods
+
+	static ULyraClonePawnExtensionComponent* FindPawnExtensionComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<ULyraClonePawnExtensionComponent>() : nullptr); }
+	template <class T>
+	const T* GetPawnData() const { return Cast<T>(PawnData); }
 	void SetPawnData(const ULyraClonePawnData* InPawnData);
 	void SetupPlayerInputComponent();
 
 	// UPawnComponent interfaces 
+	// 
 	// beinplay보다 빠른 시점에 호출된다.
 	virtual void OnRegister() final;
 	virtual void BeginPlay() final;

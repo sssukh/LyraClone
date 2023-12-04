@@ -1,10 +1,22 @@
 #include "LyraCloneCharacter.h"
 #include "LyraClonePawnExtensionComponent.h"
+#include "LyraClone/Camera/LyraCloneCameraComponent.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneCharacter)
 
 ALyraCloneCharacter::ALyraCloneCharacter(const FObjectInitializer& ObjectInitializer)
 {
+	// Tick 비활성화
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bCanEverTick = false;
+
+	// PawnExtenstionComponent 생성
 	PawnExtComponent = CreateDefaultSubobject<ULyraClonePawnExtensionComponent>(TEXT("PawnExtensionComponent"));
+
+	// CameraComponent 생성
+	{
+		CameraComponent = CreateDefaultSubobject<ULyraCloneCameraComponent>(TEXT("CameraComponent"));
+		CameraComponent->SetRelativeLocation(FVector(-300.0f, 0.0f, 75.0f));
+	}
 }
 
 void ALyraCloneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

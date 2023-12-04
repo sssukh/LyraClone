@@ -4,6 +4,7 @@
 #include "LyraCloneCharacter.generated.h"
 
 class ULyraClonePawnExtensionComponent;
+class ULyraCloneCameraComponent;
 
 UCLASS()
 class ALyraCloneCharacter : public ACharacter
@@ -17,4 +18,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="LyraClone|Character")
 	TObjectPtr<ULyraClonePawnExtensionComponent> PawnExtComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LyraClone|Character")
+	TObjectPtr<ULyraCloneCameraComponent> CameraComponent;
 };
