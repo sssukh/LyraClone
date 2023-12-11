@@ -1,9 +1,10 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "Engine/AssetManager.h"
 #include "LyraCloneAssetManager.generated.h"
 
-UCLASS()
+UCLASS(Config=Game)
 class ULyraCloneAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
@@ -14,7 +15,7 @@ public:
 	virtual void StartInitialLoading() override final;
 
 public:
-	static void TestClone();
+	static bool TestClone();
 
 	static ULyraCloneAssetManager& Get();
 

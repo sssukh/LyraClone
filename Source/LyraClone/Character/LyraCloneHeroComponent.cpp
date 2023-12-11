@@ -81,11 +81,11 @@ void ULyraCloneHeroComponent::OnActorInitStateChanged(const FActorInitStateChang
 	
 	const FLyraCloneGameplayTags& InitTags = FLyraCloneGameplayTags::Get();
 
-	if (Params.FeatureName != NAME_ActorFeatureName)
+	if (Params.FeatureName != ULyraClonePawnExtensionComponent::NAME_ActorFeatureName)
 	{
 		// ULyraClonePawnExtensionComponent의 DataInitialized 상태 변화 관찰 후, LyraCloneHeroComponent도 Datainitialized 상태로 변경
 		// - CanChangedInitState 확인
-		if (Params.FeatureState == InitTags.InitState_DataAvailable)
+		if (Params.FeatureState == InitTags.InitState_DataInitialized)
 		{
 			CheckDefaultInitialization();
 		}
@@ -96,8 +96,8 @@ bool ULyraCloneHeroComponent::CanChangeInitState(UGameFrameworkComponentManager*
 {
 	check(Manager);
 
-	APawn* Pawn = GetPawn<APawn>();
 	const FLyraCloneGameplayTags& InitTags = FLyraCloneGameplayTags::Get();
+	APawn* Pawn = GetPawn<APawn>();
 	ALyraClonePlayerState* PS = GetPlayerState<ALyraClonePlayerState>();
 
 	// InitState_Spawned 초기화

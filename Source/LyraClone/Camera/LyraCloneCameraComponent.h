@@ -18,9 +18,11 @@ class ULyraCloneCameraComponent : public UCameraComponent
 	GENERATED_BODY()
 public:
 	ULyraCloneCameraComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 	static ULyraCloneCameraComponent* FindCameraComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<ULyraCloneCameraComponent>() : nullptr); }
 
 	// member function
+	AActor* GetTargetActor() const { return GetOwner(); }
 	void UpdateCameraModes();
 
 	// CameraComponent interface

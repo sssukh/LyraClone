@@ -2,9 +2,15 @@
 #include "LyraClone/LyraCloneGameplayTags.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneAssetManager)
 
-ULyraCloneAssetManager::ULyraCloneAssetManager() : Super()
-{
 
+bool ULyraCloneAssetManager::TestClone()
+{
+	static bool bResult = false;
+	{
+		bResult = ShouldLogAssetLoads();
+	}
+	
+	return true;
 }
 
 ULyraCloneAssetManager& ULyraCloneAssetManager::Get()
@@ -19,29 +25,11 @@ ULyraCloneAssetManager& ULyraCloneAssetManager::Get()
 	return *NewObject<ULyraCloneAssetManager>();
 }
 
-
-void ULyraCloneAssetManager::StartInitialLoading()
-{
-	Super::StartInitialLoading();
-
-	FLyraCloneGameplayTags::InitializeNativeTags();
-}
-
 bool ULyraCloneAssetManager::ShouldLogAssetLoads()
 {
 	const TCHAR* commnadLineContent = FCommandLine::Get();
 	static bool bLogAssetLoads = FParse::Param(commnadLineContent, TEXT("LogAssetLoads"));
 	return bLogAssetLoads;
-}
-
-
-void ULyraCloneAssetManager::AddLoadedAsset(const UObject* Asset)
-{
-	if (ensureAlways(Asset))
-	{
-		FScopeLock Lock(&SyncObject);
-		LoadedAssets.Add(Asset);
-	}
 }
 
 UObject* ULyraCloneAssetManager::SynchronousLoadAsset(const FSoftObjectPath& AssetPath)
@@ -61,8 +49,31 @@ UObject* ULyraCloneAssetManager::SynchronousLoadAsset(const FSoftObjectPath& Ass
 
 	return nullptr;
 }
-void ULyraCloneAssetManager::TestClone()
+
+ULyraCloneAssetManager::ULyraCloneAssetManager() : UAssetManager()
 {
-	ShouldLogAssetLoads();
+
 }
+
+void ULyraCloneAssetManager::AddLoadedAsset(const UObject* Asset)
+{
+	if (ensureAlways(Asset))
+	{
+		FScopeLock Lock(&SyncObject);
+		LoadedAssets.Add(Asset);
+	}
+}
+
+
+void ULyraCloneAssetManager::StartInitialLoading()
+{
+	Super::StartInitialLoading();
+
+	FLyraCloneGameplayTags::InitializeNativeTags();
+}
+
+
+
+
+
 

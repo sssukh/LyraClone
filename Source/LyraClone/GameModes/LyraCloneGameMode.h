@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,9 +6,7 @@
 
 class ULyraCloneExperienceDefinition;
 class ULyraClonePawnData;
-/**
- * 
- */
+
 UCLASS()
 class LYRACLONE_API ALyraCloneGameMode : public AGameModeBase
 {
@@ -18,24 +14,21 @@ class LYRACLONE_API ALyraCloneGameMode : public AGameModeBase
 public:
 	ALyraCloneGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-
-	// AGameModeBase interface
-
+	/**
+	 * AGameModeBase interface
+	 */
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override final;
 	virtual void InitGameState() override final;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) final;
-	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
-
-	// member methods
-
+	/**
+	 * member methods
+	 */
 	void HandleMatchAssignmentIfNotExpectingOne();
 	void OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId);
 	bool IsExperienceLoaded() const;
 	void OnExperienceLoaded(const ULyraCloneExperienceDefinition* CurrentExperience);
 	const ULyraClonePawnData* GetPawnDataForController(const AController* InController) const;
-
-	
-
 };

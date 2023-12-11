@@ -4,6 +4,7 @@
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneCharacter)
 
 ALyraCloneCharacter::ALyraCloneCharacter(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
 {
 	// Tick 비활성화
 	PrimaryActorTick.bStartWithTickEnabled = false;

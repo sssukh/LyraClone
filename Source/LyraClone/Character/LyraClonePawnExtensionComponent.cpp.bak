@@ -147,7 +147,7 @@ bool ULyraClonePawnExtensionComponent::CanChangeInitState(UGameFrameworkComponen
 		const bool bHasAuthority = Pawn->HasAuthority();
 		// LocallyControlled인 Pawn이 Controller가 없으면 에러!
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
-		if (bIsLocallyControlled)
+		if (bHasAuthority || bIsLocallyControlled)
 		{
 			if (!GetController<AController>())
 			{

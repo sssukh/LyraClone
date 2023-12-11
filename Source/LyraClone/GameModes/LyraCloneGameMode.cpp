@@ -1,7 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "LyraCloneGameMode.h"
-
 #include "LyraCloneExperienceManagerComponent.h"
 #include "LyraCloneGameState.h"
 #include "LyraClone/LyraCloneChannels.h"
@@ -9,9 +6,10 @@
 #include "LyraClone/Player/LyraClonePlayerController.h"
 #include "LyraClone/Player/LyraClonePlayerState.h"
 #include "LyraClone/Character/LyraClonePawnData.h"
+#include "LyraClone/Character/LyraClonePawnExtensionComponent.h"
 #include "LyraClone/GameModes/LyraCloneExperienceDefinition.h"
-
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneGameMode)
+
 
 ALyraCloneGameMode::ALyraCloneGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -22,16 +20,14 @@ ALyraCloneGameMode::ALyraCloneGameMode(const FObjectInitializer& ObjectInitializ
 }
 
 /*
-* InitGame은 맵이 초기화되면서 가장 먼저 호출되는 함수
-*/
-
+ * InitGame은 맵이 초기화되면서 가장 먼처 호출되는 함수.
+ */
 void ALyraCloneGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	// 다음 틱에 등록된 함수를 호출시켜라(델리게이트이다)
-	// 아직 GameInstance가 초기화가 완료되지 않았기 때문에 현재 프레임에서 Experience를 처리할 수 없다.
-	// 때문에 다음 프레임에서 처리하도록 이렇게 한다.
+	// 아직 GameInstance를 통해, 초기화 작업이 진행되므로, 현 프레임에는 Lyra의 Concept인 Experience 처리를 진행할 수 없다:
+	// 이를 처리하기 위해, 한프레임 뒤에 이벤트를 받아 처리를 이어서 진행한다
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignmentIfNotExpectingOne);
 }
 
@@ -39,7 +35,7 @@ void ALyraCloneGameMode::InitGameState()
 {
 	Super::InitGameState();
 
-	// Experience 비동기 로딩을 위해 Delegate를 준비한다.
+	// Experience 비동기 로딩을 위해 Delegatge를 준비한다
 	ULyraCloneExperienceManagerComponent* ExperienceManagerComponent = GameState->FindComponentByClass<ULyraCloneExperienceManagerComponent>();
 	check(ExperienceManagerComponent);
 
@@ -57,52 +53,78 @@ UClass* ALyraCloneGameMode::GetDefaultPawnClassForController_Implementation(ACon
 			return PawnData->PawnClass;
 		}
 	}
+
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
-// GameMode에서 설정된 Pawn이 소환이 완료되면 호출되는 함수
-APawn* ALyraCloneGameMode::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
+/*
+ * GameMode에서 설정된 Pawn이 소환이 완료되면 호출되는 함수
+ */
+APawn* ALyraCloneGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) 
 {
-	UE_LOG(LogLyraClone, Log, TEXT("SpanwDefaultPawnAtTransform_Implementation is called!"));
-	return Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;
+	SpawnInfo.bDeferConstruction = true;
+
+	if (UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer))
+	{
+		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
+		{
+			// FindPawnExtensionComponent 구현
+			if (ULyraClonePawnExtensionComponent* PawnExtComp = ULyraClonePawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn))
+			{
+				if (const ULyraClonePawnData* PawnData = GetPawnDataForController(NewPlayer))
+				{
+					PawnExtComp->SetPawnData(PawnData);
+				}
+			}
+			SpawnedPawn->FinishSpawning(SpawnTransform);
+			return SpawnedPawn;
+		}
+	}
+
+	return nullptr;
 }
 
-// Pawn을 소환해주는 함수
+/*
+ * Pawn을 소환해주는 함수
+ */
 void ALyraCloneGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	// Experience Loading이 완료되었다면 Pawn 생성
+	// Experince Loading이 완료되었다면 Pawn 생성
 	if (IsExperienceLoaded())
 	{
 		Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 	}
 }
 
-
-
 void ALyraCloneGameMode::HandleMatchAssignmentIfNotExpectingOne()
 {
-	// 해당 함수에서는 우리가 로딩할 Experience에 대해 PrimaryAssetId를 생성하여, OnMatchAssignmentGiven으로 넘겨준다.
+	// 해당 함수에서는 우리가 로딩할 Experience에 대해 PrimaryAssetId를 생성하여, OnMatchAssignmentGiven으로 넘겨준다
 	FPrimaryAssetId ExperienceId;
-	
+
 	// precedence order (highest wins)
 	// - matchmaking assignment (if present)
 	// - default experience
+
 	UWorld* World = GetWorld();
 
-
 	// fall back to the default experience
-	// 일단 기본 옵션으로 default하게 B_LyraCloneDefaultExperience로 설정 놓자
+	// 일단 기본 옵션으로 default하게 B_LyraCloneDefaultExperience로 설정놓자
 	if (!ExperienceId.IsValid())
 	{
 		ExperienceId = FPrimaryAssetId(FPrimaryAssetType("LyraCloneExperienceDefinition"), FName("B_LyraCloneDefaultExperience"));
 	}
 
-	//
+	// 필자가 이해한 HandleMatchAssignmentIfNotExpectingOne과 OnMatchAssignmentGiven()은 아직 직관적으로 이름이 와닫지 않는다고 생각한다
+	// - 후일, 어느정도 Lyra가 구현되면, 해당 함수의 명을 더 이해할 수 있을 것으로 예상한다
 	OnMatchAssignmentGiven(ExperienceId);
 }
 
-
-// Experience 로딩이 되었는지 확인하는 함수
+/*
+ *  Expericne 로딩이 되었는지 확인하는 함수
+ */
 bool ALyraCloneGameMode::IsExperienceLoaded() const
 {
 	check(GameState);
@@ -114,33 +136,14 @@ bool ALyraCloneGameMode::IsExperienceLoaded() const
 
 void ALyraCloneGameMode::OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId)
 {
-	// 해당 함수는 ExperienceManagerComponent를 활용하여 Experience를 로딩하기 위해, ExperienceManagerComponent의 ServerSetCurrentExperience를 호출한다.
+	// 해당 함수는 ExperienceManagerComponent을 활용하여 Experience을 로딩하기 위해, ExperienceManagerComponent의 ServerSetCurrentExperience를 호출한다
+
 	check(ExperienceId.IsValid());
 
 	ULyraCloneExperienceManagerComponent* ExperienceManagerComponent = GameState->FindComponentByClass<ULyraCloneExperienceManagerComponent>();
 	check(ExperienceManagerComponent);
 
 	ExperienceManagerComponent->ServerSetCurrentExperience(ExperienceId);
-}
-
-// 로딩이 완료 된 후 Experience를 받아와서 초기화 해주기 위한 함수
-void ALyraCloneGameMode::OnExperienceLoaded(const ULyraCloneExperienceDefinition* CurrentExperience)
-{
-	// PlayerController를 순회하며
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
-	{
-		APlayerController* PC = Cast<APlayerController>(*Iterator);
-
-		// PlayerController가 Pawn을 Possess하지 않았다면, RestartPlayer를 통해 Pawn을 다시 Spawn한다
-		// - 한번 OnPossess를 보도록 하자:
-		if (PC && PC->GetPawn() == nullptr)
-		{
-			if (PlayerCanRestart(PC))
-			{
-				RestartPlayer(PC);
-			}
-		}
-	}
 }
 
 const ULyraClonePawnData* ALyraCloneGameMode::GetPawnDataForController(const AController* InController) const
@@ -158,9 +161,8 @@ const ULyraClonePawnData* ALyraCloneGameMode::GetPawnDataForController(const ACo
 		}
 	}
 
-
 	// fall back to the default for the current experience
-	// 아직 PlayerState에 PawnData가 설정되어 있지 않은 경우, ExperienceManagerComponent의 CurrentExperience로 부터 가져와서 설정
+	// 아직 PlayerState에 PawnData가 설정되어 있지 않은 경우, ExperienceManagerComponent의 CurrentExperience로부터 가져와서 설정
 	check(GameState);
 	ULyraCloneExperienceManagerComponent* ExperienceManagerComponent = GameState->FindComponentByClass<ULyraCloneExperienceManagerComponent>();
 	check(ExperienceManagerComponent);
@@ -177,5 +179,28 @@ const ULyraClonePawnData* ALyraCloneGameMode::GetPawnDataForController(const ACo
 
 	// 어떠한 케이스에도 핸들링 안되었으면 nullptr
 	return nullptr;
+}
+
+
+/*
+ * 로딩이 완료 된 후 Expericne를 받아와서 초기화 해주기 위한 함수
+ */
+void ALyraCloneGameMode::OnExperienceLoaded(const ULyraCloneExperienceDefinition* CurrentExperience)
+{
+	// PlayerController를 순회하며
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PC = Cast<APlayerController>(*Iterator);
+
+		// PlayerController가 Pawn을 Possess하지 않았다면, RestartPlayer를 통해 Pawn을 다시 Spawn한다
+		// - 한번 OnPossess를 보도록 하자:
+		if (PC && PC->GetPawn() == nullptr)
+		{
+			if (PlayerCanRestart(PC))
+			{
+				RestartPlayer(PC);
+			}
+		}
+	}
 }
 
