@@ -4,7 +4,10 @@
 #include "Components/GameFrameworkInitStateInterface.h"
 #include "LyraCloneHeroComponent.generated.h"
 
+struct FInputActionValue;
+struct FLyraCloneMappableConfigPair;
 class ULyraCloneCameraMode;
+
 UCLASS(Blueprintable,Meta=(BlueprintSpawnableComponent))
 class ULyraCloneHeroComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
 {
@@ -30,4 +33,10 @@ public:
 
 	// member methods
 	TSubclassOf<ULyraCloneCameraMode> DeterminCameraMode() const;
+	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
+	void Input_Move(const FInputActionValue& InputActionValue);
+	void Input_LookMouse(const FInputActionValue& InputActionValue);
+
+	UPROPERTY(EditAnywhere)
+	TArray<FLyraCloneMappableConfigPair> DefaultInputConfigs;
 };

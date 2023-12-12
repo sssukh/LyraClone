@@ -5,6 +5,7 @@
 #include "LyraClonePawnData.generated.h"
 
 class ULyraCloneCameraMode;
+class ULyraCloneInputConfig;
 
 // 사용할 폰이 가질 최소한의 것을 정의하는 곳
 UCLASS(BlueprintType)
@@ -20,4 +21,7 @@ public:
 	// Camera Mode
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "LyraClone|Camera")
 	TSubclassOf<ULyraCloneCameraMode> DefaultCameraMode;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "LyraClone|InputConfig")
+	TObjectPtr<ULyraCloneInputConfig> InputConfig;
 };
