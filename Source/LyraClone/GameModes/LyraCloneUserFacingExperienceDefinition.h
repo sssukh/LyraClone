@@ -4,6 +4,8 @@
 #include "Engine/DataAsset.h"
 #include "LyraCloneUserFacingExperienceDefinition.generated.h"
 
+class UCommonSession_HostSessionRequest;
+
 // 어떤 맵에서 어떤 캐릭터를 수행할 지 정한다.
 UCLASS(BlueprintType)
 class LYRACLONE_API ULyraCloneUserFacingExperienceDefinition : public UPrimaryDataAsset
@@ -16,5 +18,9 @@ public:
 
 	// 사용자 경험 세팅
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Experience, meta = (AllowedTypes = "LyraCLoneExperienceDefinition"))
-	FPrimaryAssetId ExperienceId;
+	FPrimaryAssetId ExperienceID;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false)
+	UCommonSession_HostSessionRequest* CreateHostingRequest() const;
+
 };
