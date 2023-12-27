@@ -4,6 +4,8 @@
 #include "LyraCloneExperienceDefinition.generated.h"
 
 class ULyraClonePawnData;
+class UGameFeatureAction;
+class ULyraCloneExperienceActionSet;
 
 UCLASS()
 class ULyraCloneExperienceDefinition : public UPrimaryDataAsset
@@ -17,4 +19,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
 	TArray<FString> GameFeaturesToEnable;
+
+	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
+	TArray<TObjectPtr<ULyraCloneExperienceActionSet>> ActionSets;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Actions")
+	TArray<TObjectPtr<UGameFeatureAction>> Actions;
 };

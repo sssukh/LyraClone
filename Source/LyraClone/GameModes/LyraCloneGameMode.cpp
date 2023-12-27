@@ -2,6 +2,7 @@
 #include "LyraCloneExperienceManagerComponent.h"
 #include "LyraCloneGameState.h"
 #include "LyraClone/LyraCloneChannels.h"
+#include "Kismet/GameplayStatics.h"
 #include "LyraClone/Character/LyraCloneCharacter.h"
 #include "LyraClone/Player/LyraClonePlayerController.h"
 #include "LyraClone/Player/LyraClonePlayerState.h"
@@ -109,6 +110,13 @@ void ALyraCloneGameMode::HandleMatchAssignmentIfNotExpectingOne()
 	// - default experience
 
 	UWorld* World = GetWorld();
+
+	if (!ExperienceId.IsValid() && UGameplayStatics::HasOption(OptionsString, TEXT("Experience")))
+	{
+		const FString ExperienceFromOptions = UGameplayStatics::ParseOption(OptionsString, TEXT("Experience"));
+		ExperienceId = FPrimaryAssetId(FPrimaryAssetType(ULyraCloneExperienceDefinition::StaticClass()->GetFName()),
+			FName(*ExperienceFromOptions));
+	}
 
 	// fall back to the default experience
 	// 일단 기본 옵션으로 default하게 B_LyraCloneDefaultExperience로 설정놓자

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFeaturePluginOperationResult.h"
 #include "Components/GameStateComponent.h"
 #include "LyraCloneExperienceManagerComponent.generated.h"
 
@@ -10,6 +11,8 @@ enum class ELyraCloneExperienceLoadState
 {
 	Unloaded,
 	Loading,
+	LoadingGameFeatures,
+	ExecutingActions,
 	Loaded,
 	Deactivating
 };
@@ -32,8 +35,10 @@ class ULyraCloneExperienceManagerComponent : public UGameStateComponent
 	void ServerSetCurrentExperience(FPrimaryAssetId ExperienceId);
 	void StartExperienceLoad();
 	void OnExperienceLoadComplete();
-	void OnExperienceFullLoadComplete();
+	void OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result);
+	void OnExperienceFullLoadCompleted();
 	const ULyraCloneExperienceDefinition* GetCurrentExperienceChecked() const;
+
 
 	/*
 	* member variable
@@ -47,4 +52,8 @@ class ULyraCloneExperienceManagerComponent : public UGameStateComponent
 	ELyraCloneExperienceLoadState LoadState = ELyraCloneExperienceLoadState::Unloaded;
 
 	FOnLyraCloneExperienceLoaded OnExperienceLoaded;
+
+	int32 NumGameFeaturePluginsLoading = 0;
+	TArray<FString> GameFeaturePluginURLs;
+
 };

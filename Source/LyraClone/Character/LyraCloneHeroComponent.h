@@ -37,6 +37,9 @@ public:
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 
+	static const FName NAME_BindInputsNow;
+
+
 	UPROPERTY(EditAnywhere)
 	TArray<FLyraCloneMappableConfigPair> DefaultInputConfigs;
 };

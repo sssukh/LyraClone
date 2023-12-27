@@ -1,9 +1,10 @@
 #include "LyraCloneExperienceManagerComponent.h"
-
-#include "GameFeaturesSubsystemSettings.h"
 #include "LyraCloneExperienceDefinition.h"
+#include "LyraCloneExperienceActionSet.h"
+#include "GameFeaturesSubsystem.h"
+#include "GameFeaturesSubsystemSettings.h"
+#include "Net/UnrealNetwork.h"
 #include "LyraClone/System/LyraCloneAssetManager.h"
-//#include "../../../../../Engine/Plugins/Experimental/GameFeatures/Source/GameFeatures/Public/GameFeaturesSubsystemSettings.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneExperienceManagerComponent)
 
 ULyraCloneExperienceManagerComponent::ULyraCloneExperienceManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -126,13 +127,69 @@ void ULyraCloneExperienceManagerComponent::OnExperienceLoadComplete()
 	// FrameNumber를 주목해서 보자
 	static int32 OnExperienceLoadComplete_FrameNumber = GFrameNumber;
 
-	// 해당 함수가 불리는 것은 앞서 보았던 StreamableDelegateDelayHelper에 의해 불림
-	OnExperienceFullLoadComplete();
+	check(LoadState == ELyraCloneExperienceLoadState::Loading);
+	check(CurrentExperience);
+
+	GameFeaturePluginURLs.Reset();
+	auto CollectGameFeaturePluginURLs = [This = this](const UPrimaryDataAsset* Context, const TArray<FString>& FeaturePluginList)
+	{
+		for (const FString& PluginName : FeaturePluginList)
+		{
+			FString PluginURL;
+			if (UGameFeaturesSubsystem::Get().GetPluginURLByName(PluginName, PluginURL))
+			{
+				This->GameFeaturePluginURLs.AddUnique(PluginURL);
+			}
+		}
+	};
+	CollectGameFeaturePluginURLs(CurrentExperience, CurrentExperience->GameFeaturesToEnable);
+	NumGameFeaturePluginsLoading = GameFeaturePluginURLs.Num();
+	if (NumGameFeaturePluginsLoading)
+	{
+		LoadState = ELyraCloneExperienceLoadState::LoadingGameFeatures;
+		for (const FString& PluginURL : GameFeaturePluginURLs)
+		{
+			UGameFeaturesSubsystem::Get().LoadAndActivateGameFeaturePlugin(PluginURL,
+				FGameFeaturePluginLoadComplete::CreateUObject(this, &ThisClass::OnGameFeaturePluginLoadComplete));
+		}
+	}
+	else
+	{
+		OnExperienceFullLoadCompleted();
+	}
 }
 
-void ULyraCloneExperienceManagerComponent::OnExperienceFullLoadComplete()
+void ULyraCloneExperienceManagerComponent::OnExperienceFullLoadCompleted()
 {
 	check(LoadState != ELyraCloneExperienceLoadState::Loaded);
+	{
+		LoadState = ELyraCloneExperienceLoadState::ExecutingActions;
+		FGameFeatureActivatingContext Context;
+		{
+			const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld());
+			if (ExistingWorldContext)
+			{
+				Context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
+			}
+		}
+		auto ActivateListOfActions = [&Context](const TArray<UGameFeatureAction*>& ActionList)
+		{
+			for (UGameFeatureAction* Action : ActionList)
+			{
+				if (Action)
+				{
+					Action->OnGameFeatureRegistering();
+					Action->OnGameFeatureLoading();
+					Action->OnGameFeatureActivating(Context);
+				}
+			}
+		};
+		ActivateListOfActions(CurrentExperience->Actions);
+		for (const TObjectPtr<ULyraCloneExperienceActionSet>& ActionSet : CurrentExperience->ActionSets)
+		{
+			ActivateListOfActions(ActionSet->Actions);
+		}
+	}
 
 	LoadState = ELyraCloneExperienceLoadState::Loaded;
 	OnExperienceLoaded.Broadcast(CurrentExperience);
@@ -144,4 +201,14 @@ const ULyraCloneExperienceDefinition* ULyraCloneExperienceManagerComponent::GetC
 	check(LoadState == ELyraCloneExperienceLoadState::Loaded);
 	check(CurrentExperience != nullptr);
 	return CurrentExperience;
+}
+
+void ULyraCloneExperienceManagerComponent::OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result)
+{
+	NumGameFeaturePluginsLoading--;
+	if (NumGameFeaturePluginsLoading == 0)
+	{
+		OnExperienceFullLoadCompleted();
+	}
+
 }

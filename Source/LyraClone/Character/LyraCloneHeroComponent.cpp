@@ -17,6 +17,8 @@
 // FeatureName 정의 " static member variable 초기화
 const FName ULyraCloneHeroComponent::NAME_ActorFeatureName("Hero");
 
+const FName ULyraCloneHeroComponent::NAME_BindInputsNow("BindInputsNow");
+
 ULyraCloneHeroComponent::ULyraCloneHeroComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	// LyraCloneHeroComponent도 PawnExtensionComponent와 동일하게 초기화를 이벤트로 처리할 예정이므로 Tick을 끕니다.
@@ -100,6 +102,9 @@ void ULyraCloneHeroComponent::InitializePlayerInput(UInputComponent* PlayerInput
 		}
 	}
 
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
+
+
 }
 
 void ULyraCloneHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
@@ -109,6 +114,7 @@ void ULyraCloneHeroComponent::Input_Move(const FInputActionValue& InputActionVal
 
 	if (Controller)
 	{
+		
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
 		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
 		if (Value.X != 0.0f)
@@ -120,6 +126,12 @@ void ULyraCloneHeroComponent::Input_Move(const FInputActionValue& InputActionVal
 		{
 			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
 			Pawn->AddMovementInput(MovementDirection, Value.Y);
+		}
+
+		bool bLogging = true;
+		if (bLogging)
+		{
+			UE_LOG(LogLyraClone, Log, TEXT("Input_Move[X=%.2f][Y=%.2f]"), Value.X, Value.Y);
 		}
 	}
 }
