@@ -1,10 +1,10 @@
 #pragma once
 
-#include "GameFramework/PlayerController.h"
+#include "ModularPlayerController.h"
 #include "LyraClonePlayerController.generated.h"
 
 UCLASS()
-class ALyraClonePlayerController : public APlayerController
+class ALyraClonePlayerController : public AModularPlayerController
 {
 	GENERATED_BODY()
 public:
