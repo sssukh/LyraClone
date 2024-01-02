@@ -34,6 +34,13 @@ struct FLyraCloneCharacterPartList
 	FLyraCloneCharacterPartList() : OwnerComponent(nullptr) {}
 	FLyraCloneCharacterPartList(ULyraClonePawnComponent_CharacterParts* InOwnerComponent) : OwnerComponent(InOwnerComponent) {}
 
+	FLyraCloneCharacterPartHandle AddEntry(FLyraCloneCharacterPart NewPart);
+	bool SpawnActorForEntry(FLyraCloneAppliedCharacterPartEntry& Entry);
+	FGameplayTagContainer CollectCombinedTags() const;
+	void RemoveEntry(FLyraCloneCharacterPartHandle Handle);
+	void DestroyActorForEntry(FLyraCloneAppliedCharacterPartEntry& Entry);
+
+
 	// 현재 인스턴스화 된 Character Part
 	UPROPERTY()
 	TArray<FLyraCloneAppliedCharacterPartEntry> Entries;
@@ -54,6 +61,15 @@ class ULyraClonePawnComponent_CharacterParts : public UPawnComponent
 public:
 	ULyraClonePawnComponent_CharacterParts(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	FLyraCloneCharacterPartHandle AddCharacterPart(const FLyraCloneCharacterPart& NewPart);
+	USkeletalMeshComponent* GetParentMeshComponent() const;
+	USceneComponent* GetSceneComponentToAttachTo() const;
+	void BroadcastChanged();
+	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
+	void RemoveCharacterPart(FLyraCloneCharacterPartHandle Handle);
+
+
+
 	// 인스턴스화 된 Character Parts
 	UPROPERTY()
 	FLyraCloneCharacterPartList CharacterPartList;
@@ -61,4 +77,7 @@ public:
 	// 애니메이션 적용을 위한 메시와 연결고리
 	UPROPERTY(EditAnywhere, Category = Cosmetics)
 	FLyraCloneAnimBodyStyleSelectionSet BodyMeshes;
+
+	
 };
+
