@@ -1,6 +1,7 @@
 #include "LyraCloneCharacter.h"
 #include "LyraClonePawnExtensionComponent.h"
 #include "LyraClone/Camera/LyraCloneCameraComponent.h"
+#include "LyraClone/AbilitySystem/LyraCloneAbilitySystemComponent.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneCharacter)
 
 ALyraCloneCharacter::ALyraCloneCharacter(const FObjectInitializer& ObjectInitializer)
@@ -27,4 +28,10 @@ void ALyraCloneCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	// Pawn이 Possess로서, Controller와 PlayerState 정보 접근이 가능한 상태가 되었음 :
 	// - SetupPlayerInputComponent 확인 
 	PawnExtComponent->SetupPlayerInputComponent();
+}
+
+UAbilitySystemComponent* ALyraCloneCharacter::GetAbilitySystemComponent() const
+{
+	// 앞서, 우리는 PawnExtensionComponent에 AbilitySystemComponent를 캐싱하였다.
+	return PawnExtComponent->GetLyraCloneAbilitySystemComponent();
 }

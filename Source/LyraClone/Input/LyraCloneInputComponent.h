@@ -39,13 +39,11 @@ void ULyraCloneInputComponent::BindAbilityActions(const ULyraCloneInputConfig* I
 		{
 			if (PressedFunc)
 			{
-				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Triggered,
-					Object, PressedFunc, Action.InputTag).GetHandle());
+				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, PressedFunc, Action.InputTag).GetHandle());
 			}
 			if (ReleasedFunc)
 			{
-				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Completed,
-					Object, ReleasedFunc, Action.InputTag).GetHandle());
+				BindHandles.Add(BindAction(Action.InputAction, ETriggerEvent::Completed, Object, ReleasedFunc, Action.InputTag).GetHandle());
 			}
 		}
 	}

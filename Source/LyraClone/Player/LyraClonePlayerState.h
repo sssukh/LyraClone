@@ -5,6 +5,7 @@
 
 class ULyraClonePawnData;
 class ULyraCloneExperienceDefinition;
+class ULyraCloneAbilitySystemComponent;
 
 UCLASS()
 class ALyraClonePlayerState : public APlayerState
@@ -21,6 +22,11 @@ public:
 	void OnExperienceLoaded(const ULyraCloneExperienceDefinition* CurrentExperience);
 	void SetPawnData(const ULyraClonePawnData* InPawnData);
 
+	ULyraCloneAbilitySystemComponent* GetLyraCloneAbilitySystemComponent() const { return AbilitySystemComponent; }
+
 	UPROPERTY()
 	TObjectPtr<const ULyraClonePawnData>	PawnData;
+
+	UPROPERTY(VisibleAnywhere,Category="LyraClone|PlayerState")
+	TObjectPtr<ULyraCloneAbilitySystemComponent> AbilitySystemComponent;
 };

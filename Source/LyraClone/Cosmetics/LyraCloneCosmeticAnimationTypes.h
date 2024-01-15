@@ -45,6 +45,7 @@ struct FLyraCloneAnimLayerSelectionEntry
 {
 	GENERATED_BODY()
 	
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UAnimInstance> Layer;
 
@@ -57,9 +58,14 @@ struct FLyraCloneAnimLayerSelectionSet
 {
 	GENERATED_BODY()
 	
+	// GameplayTag를 통해 (CosmeticTags), Mesh Rules에 따라 알맞은 BodyStyle을 변환한다.
+	TSubclassOf<UAnimInstance> SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const;
+
+	// AnimLayer 적용할 SkeletalMesh를 들고 있음 -> Animation-Mesh간 Rules를 MeshRules라고 생각하면 됨.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FLyraCloneAnimLayerSelectionEntry> LayerRules;
 
+	// 그냥 디폴트로 적용할 SkeletalMesh
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UAnimInstance> DefaultLayer;
 };

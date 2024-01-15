@@ -3,6 +3,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "LyraClone/LyraCloneChannels.h"
 #include "LyraClone/LyraCloneGameplayTags.h"
+#include "LyraClone/AbilitySystem/LyraCloneAbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraClonePawnExtensionComponent)
 
@@ -40,6 +41,37 @@ void ULyraClonePawnExtensionComponent::SetupPlayerInputComponent()
 {
 	// ForceUpdate로 다시 InitState 상태 변환 시작(연결고리)
 	CheckDefaultInitialization();
+}
+
+void ULyraClonePawnExtensionComponent::InitializeAbilitySystem(ULyraCloneAbilitySystemComponent* InASC, AActor* InOwnerActor)
+{
+	check(InASC && InOwnerActor);
+
+	if (AbilitySystemComponent == InASC)
+	{
+		return;
+	}
+
+	if (AbilitySystemComponent)
+	{
+		UninitializeAbilitySystem();
+	}
+
+	APawn* Pawn = GetPawnChecked<APawn>();
+	AActor* ExistingAvatar = InASC->GetAvatarActor();
+	check(!ExistingAvatar);
+
+	// ASC를 업데이트하고, InitAbilityActorInfo를 Pawn과 같이 호출하며, AvatarActor를 Pawn으로 업데이트 해준다.
+	AbilitySystemComponent = InASC;
+	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
+}
+
+void ULyraClonePawnExtensionComponent::UninitializeAbilitySystem()
+{
+	if (!AbilitySystemComponent)
+		return;
+	
+	AbilitySystemComponent = nullptr;
 }
 
 void ULyraClonePawnExtensionComponent::OnRegister()

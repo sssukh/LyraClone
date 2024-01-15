@@ -12,3 +12,13 @@ USkeletalMesh* FLyraCloneAnimBodyStyleSelectionSet::SelectBestBodyStyle(const FG
 	}
 	return DefaultMesh;
 }
+
+TSubclassOf<UAnimInstance> FLyraCloneAnimLayerSelectionSet::SelectBestLayer(const FGameplayTagContainer& CosmeticTags) const
+{
+	for (const FLyraCloneAnimLayerSelectionEntry& Rule : LayerRules)
+	{
+		if ((Rule.Layer != nullptr) && CosmeticTags.HasAll(Rule.RequiredTags))
+			return Rule.Layer;
+	}
+	return DefaultLayer;
+}

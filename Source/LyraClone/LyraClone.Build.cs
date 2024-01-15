@@ -15,6 +15,8 @@ public class LyraClone : ModuleRules
 			"InputCore",
 			// GAS
 			"GameplayTags", 
+			"GameplayTasks",
+			"GameplayAbilities",
 			// Game Features
 			"ModularGameplay", 
 			"GameFeatures" ,

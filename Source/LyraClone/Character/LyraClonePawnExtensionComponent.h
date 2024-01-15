@@ -5,6 +5,7 @@
 #include "LyraClonePawnExtensionComponent.generated.h"
 
 class ULyraClonePawnData;
+class ULyraCloneAbilitySystemComponent;
 
 UCLASS()
 class ULyraClonePawnExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
@@ -23,6 +24,9 @@ public:
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
 	void SetPawnData(const ULyraClonePawnData* InPawnData);
 	void SetupPlayerInputComponent();
+	void InitializeAbilitySystem(ULyraCloneAbilitySystemComponent* InASC, AActor* InOwnerActor);
+	void UninitializeAbilitySystem();
+	ULyraCloneAbilitySystemComponent* GetLyraCloneAbilitySystemComponent() const { return AbilitySystemComponent; }
 
 	// UPawnComponent interfaces 
 	// 
@@ -40,4 +44,8 @@ public:
 	// Pawn을 생성한 데이터를 캐싱
 	UPROPERTY(EditInstanceOnly, Category = "LyraClone|Pawn")
 	TObjectPtr<const ULyraClonePawnData> PawnData;
+
+	// AbilitySystemComponent 캐싱
+	UPROPERTY()
+	TObjectPtr<ULyraCloneAbilitySystemComponent> AbilitySystemComponent;
 };

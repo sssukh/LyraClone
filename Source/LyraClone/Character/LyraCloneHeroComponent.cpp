@@ -9,8 +9,9 @@
 #include "LyraClone/Input/LyraCloneInputComponent.h"
 #include "LyraClone/Input/LyraCloneMappableConfigPair.h"
 #include "LyraClone/Player/LyraClonePlayerController.h"
-#include "LyraCLone/Player/LyraCLonePlayerState.h"
+#include "LyraClone/Player/LyraCLonePlayerState.h"
 #include "PlayerMappableInputConfig.h"
+#include "LyraClone/AbilitySystem/LyraCloneAbilitySystemComponent.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneHeroComponent)
 
@@ -95,6 +96,10 @@ void ULyraCloneHeroComponent::InitializePlayerInput(UInputComponent* PlayerInput
 				{
 					// InputTag_Move와 InputTag_Look_Mouse에 대해 각각 Input_Move()와 Input_LookMouse() 멤버 함수에 바인딩 시킨다.
 					// - 바인딩한 이후, Input 이벤트에 따라 멤버 함수가 트리거된다.
+					{
+						TArray<uint32> BindHandles;
+						LyraCloneIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
+					}
 					LyraCloneIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
 					LyraCloneIC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
 				}
@@ -152,6 +157,34 @@ void ULyraCloneHeroComponent::Input_LookMouse(const FInputActionValue& InputActi
 	{
 		double AimInversionValue = -Value.Y;
 		Pawn->AddControllerPitchInput(AimInversionValue);
+	}
+}
+
+void ULyraCloneHeroComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const ULyraClonePawnExtensionComponent* PawnExtComp = ULyraClonePawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (ULyraCloneAbilitySystemComponent* LyraCloneASC = PawnExtComp->GetLyraCloneAbilitySystemComponent())
+			{
+				LyraCloneASC->AbilityInputTagPressed(InputTag);
+			}
+		}
+	}
+}
+
+void ULyraCloneHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const ULyraClonePawnExtensionComponent* PawnExtComp = ULyraClonePawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (ULyraCloneAbilitySystemComponent* LyraCloneASC = PawnExtComp->GetLyraCloneAbilitySystemComponent())
+			{
+				LyraCloneASC->AbilityInputTagReleased(InputTag);
+			}
+		}
 	}
 }
 
@@ -274,6 +307,10 @@ void ULyraCloneHeroComponent::HandleChangeInitState(UGameFrameworkComponentManag
 		if (ULyraClonePawnExtensionComponent* PawnExtComp = ULyraClonePawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
 			PawnData = PawnExtComp->GetPawnData<ULyraClonePawnData>();
+
+			// DataInitialized 단계까지 오면, Pawn이 Controller에 Possess되어 준비된 상태이다:
+			// - InitAbilityActorInfo 호출로 AvatarActor 재설정이 필요하다.
+			PawnExtComp->InitializeAbilitySystem(PS->GetLyraCloneAbilitySystemComponent(), PS);
 		}
 		
 		if (bIsLocallyControlled && PawnData)

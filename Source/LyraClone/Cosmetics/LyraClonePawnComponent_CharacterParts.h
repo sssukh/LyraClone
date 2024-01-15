@@ -65,6 +65,8 @@ public:
 	USkeletalMeshComponent* GetParentMeshComponent() const;
 	USceneComponent* GetSceneComponentToAttachTo() const;
 	void BroadcastChanged();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category=Cosmetics)
 	FGameplayTagContainer GetCombinedTags(FGameplayTag RequiredPrefix) const;
 	void RemoveCharacterPart(FLyraCloneCharacterPartHandle Handle);
 
