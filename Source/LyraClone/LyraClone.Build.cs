@@ -25,7 +25,9 @@ public class LyraClone : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			// CommonUser
-			"CommonUser"
+			"CommonUser",
+			// CommonGame
+			"CommonGame",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

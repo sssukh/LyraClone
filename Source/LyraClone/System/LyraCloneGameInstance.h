@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/GameInstance.h"
+#include "CommonGameInstance.h"
 #include "LyraCloneGameInstance.generated.h"
 
 /**
@@ -10,7 +10,7 @@
 */
 
 UCLASS()
-class ULyraCloneGameInstance : public UGameInstance
+class ULyraCloneGameInstance : public UCommonGameInstance
 {
 	GENERATED_BODY()
 public:

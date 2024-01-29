@@ -19,9 +19,9 @@ void ULyraCloneAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor
 
 	if (bHasNewPawnAvatar)
 	{
-		if (ULyraCloneAnimInstance* LyraAnimInst = Cast<ULyraCloneAnimInstance>(ActorInfo->GetAnimInstance()))
+		if (ULyraCloneAnimInstance* LyraCloneAnimInst = Cast<ULyraCloneAnimInstance>(ActorInfo->GetAnimInstance()))
 		{
-			LyraAnimInst->InitializeWithAbilitySystem(this);
+			LyraCloneAnimInst->InitializeWithAbilitySystem(this);
 		}
 	}
 }

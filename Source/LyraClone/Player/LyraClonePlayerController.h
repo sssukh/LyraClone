@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ModularPlayerController.h"
+#include "CommonPlayerController.h"
 #include "LyraClonePlayerController.generated.h"
 
 class ALyraClonePlayerState;
 class ULyraCloneAbilitySystemComponent;
 
 UCLASS()
-class ALyraClonePlayerController : public AModularPlayerController
+class ALyraClonePlayerController : public ACommonPlayerController
 {
 	GENERATED_BODY()
 public:
