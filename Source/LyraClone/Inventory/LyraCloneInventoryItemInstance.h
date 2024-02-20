@@ -13,7 +13,8 @@ class ULyraCloneInventoryItemInstance : public UObject
 	GENERATED_BODY()
 	public:
 	ULyraCloneInventoryItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, meta = (DeterminesOutputType = FragmentClass))
 	const ULyraCloneInventoryItemFragment*	FindFragmentByClass(TSubclassOf<ULyraCloneInventoryItemFragment> FragmentClass) const;
 
 	template <typename ResultClass>

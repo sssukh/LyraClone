@@ -28,6 +28,15 @@ public class LyraClone : ModuleRules
 			"CommonUser",
 			// CommonGame
 			"CommonGame",
+			// CommonUI
+			"CommonUI",
+			// UMG
+			"UMG",
+			// UIExtension
+			"UIExtension",
+			// Slate
+			"Slate",
+			"SlateCore",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

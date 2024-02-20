@@ -76,6 +76,18 @@ void ULyraCloneExperienceManagerComponent::StartExperienceLoad()
 	// 우리는 앞서 이미 CDO로 로딩하여, CDO를 사용하지 않고 CDO를 사용하여 로딩할 에셋을 지정하여, BundleAssetList에 추가해준다.
 	BundleAssetList.Add(CurrentExperience->GetPrimaryAssetId());
 
+	// ExperienceActionSet을 순회하며, BundleAssetList로 추가하자
+	for (const TObjectPtr<ULyraCloneExperienceActionSet>& ActionSet : CurrentExperience->ActionSets)
+	{
+		if (ActionSet)
+		{
+			// 앞서, 우리가 생성한 HAS_Shooter_SharedHUD가 추가되겠다(물론 추가적인 HAS_Shooter_XXX)도 추가될거다
+			//  - BundleAssetList는 Bundle로 등록할 Root의 PrimaryDataAsset을 추가하는 과정이다.
+			// (-> ??? 무슨말인가 싶을건데 ChangeBundleStateForPrimaryAssets)을 살펴보면서 이해하자
+			BundleAssetList.Add(ActionSet->GetPrimaryAssetId());
+		}
+	}
+
 	// load assets associated with the experience
 	// 아래는 우리가 후일 GameFeature를 사용하여, Experience에 바인딩된 GameFeature Plugin을 로딩할 Bundle 이름을 추가한다.
 	// - Bundle이라는게 후일 우리가 로딩할 에셋의 카테고리 이름이고 생각하면 된다 (일단 지금은 넘어가자 후일 ,또 다룰 것이다)
@@ -85,6 +97,8 @@ void ULyraCloneExperienceManagerComponent::StartExperienceLoad()
 		const ENetMode OwnerNetMode = GetOwner()->GetNetMode();
 		bool bLoadClient = GIsEditor || (OwnerNetMode != NM_DedicatedServer);
 		bool bLoadServer = GIsEditor || (OwnerNetMode != NM_Client);
+
+		// - LoadStateClient = "Client", LoadStateServer = "Server"
 		if (bLoadClient)
 		{
 			BundlesToLoad.Add(UGameFeaturesSubsystemSettings::LoadStateClient);

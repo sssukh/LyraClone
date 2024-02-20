@@ -7,3 +7,16 @@ UCommonLocalPlayer::UCommonLocalPlayer()
 	// - 만약 상속받는 LocalPlayer에서 FObjectInitializer를 통해 뭔가 추가 SubObject를 정의한다면 이와 같은을 수정해야 한다
 	: Super(FObjectInitializer::Get())
 {}
+
+FDelegateHandle UCommonLocalPlayer::CallAndRegister_OnPlayerStateSet(FPlayerStateSetDelegate::FDelegate Delegate)
+{
+	APlayerController* PC = GetPlayerController(GetWorld());
+	APlayerState* PlayerState = PC ? PC->PlayerState : nullptr;
+	if (PlayerState)
+	{
+		// PlayerState가 설정되어 있으면 바로 호출
+		Delegate.Execute(this, PlayerState);
+	}
+	// OnPlayerStateSet에 등록
+	return OnPlayerStateSet.Add(Delegate);
+}

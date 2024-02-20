@@ -2,7 +2,7 @@
 
 #include "UObject/Object.h"
 #include "UObject/UObjectGlobals.h"
-
+#include "CommonLocalPlayer.h"
 #include "GameUIPolicy.generated.h"
 
 class UPrimaryGameLayout;
@@ -40,6 +40,8 @@ class COMMONGAME_API UGameUIPolicy : public UObject
 {
 	GENERATED_BODY()
 public:
+	UPrimaryGameLayout* GetRootLayout(const UCommonLocalPlayer* LocalPlayer) const;
+
 	TSubclassOf<UPrimaryGameLayout> GetLayoutWidgetClass(UCommonLocalPlayer* LocalPlayer);
 	void CreateLayoutWidget(UCommonLocalPlayer* LocalPlayer);
 

@@ -136,3 +136,18 @@ ULyraCloneEquipmentInstance* FLyraCloneEquipmentList::AddEntry(TSubclassOf<ULyra
 	Result->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
 	return Result;
 }
+
+ULyraCloneEquipmentInstance* ULyraCloneEquipmentManagerComponent::GetFirstInstanceOfType(TSubclassOf<ULyraCloneEquipmentInstance> InstanceType)
+{
+	for (FLyraCloneAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (ULyraCloneEquipmentInstance* Instance = Entry.Instance)
+		{
+			if (Instance->IsA(InstanceType))
+			{
+				return Instance;
+			}
+		}
+	}
+	return nullptr;
+}

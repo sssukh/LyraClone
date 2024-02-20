@@ -18,6 +18,8 @@ class COMMONGAME_API UGameUIManagerSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 public:
 	UGameUIManagerSubsystem();
+	const UGameUIPolicy* GetCurrentUIPolicy() const { return CurrentPolicy; }
+	UGameUIPolicy* GetCurrentUIPolicy() { return CurrentPolicy; }
 
 	void SwitchToPolicy(UGameUIPolicy* InPolicy);
 

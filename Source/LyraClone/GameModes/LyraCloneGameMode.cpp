@@ -1,7 +1,6 @@
 #include "LyraCloneGameMode.h"
 #include "LyraCloneExperienceManagerComponent.h"
 #include "LyraCloneGameState.h"
-#include "LyraClone/LyraCloneChannels.h"
 #include "Kismet/GameplayStatics.h"
 #include "LyraClone/Character/LyraCloneCharacter.h"
 #include "LyraClone/Player/LyraClonePlayerController.h"
@@ -9,6 +8,9 @@
 #include "LyraClone/Character/LyraClonePawnData.h"
 #include "LyraClone/Character/LyraClonePawnExtensionComponent.h"
 #include "LyraClone/GameModes/LyraCloneExperienceDefinition.h"
+#include "LyraClone/UI/LyraCloneHUD.h"
+#include "LyraClone/LyraCloneChannels.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(LyraCloneGameMode)
 
 
@@ -18,6 +20,7 @@ ALyraCloneGameMode::ALyraCloneGameMode(const FObjectInitializer& ObjectInitializ
 	PlayerControllerClass = ALyraClonePlayerController::StaticClass();
 	PlayerStateClass = ALyraClonePlayerState::StaticClass();
 	DefaultPawnClass = ALyraCloneCharacter::StaticClass();
+	HUDClass = ALyraCloneHUD::StaticClass();
 }
 
 /*
